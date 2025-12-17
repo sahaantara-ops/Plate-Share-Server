@@ -5,7 +5,7 @@ const port = 3000
 const { MongoClient, ServerApiVersion } = require('mongodb');
 
 app.use(cors())
-app.use(express.json())
+ 
 
 app.get('/', (req, res) => {
   res.send('Server is running fine')
@@ -29,19 +29,22 @@ async function run() {
   try {
    
     await client.connect();
-    
-     const db = client.db('Food-models')
-     const foodCollection = db.collection('models')
+    const db = client.db('Food-models')
+    const foodCollection = db.collection('models')
 
      app.get('/models', async (req, res)=>{
+     const result = await foodCollection.find().toArray()
+     res.send(result)
+  })
 
-       const result = await foodCollection.find().toArray()
-       
-
-
-       res.send(result)
-     })
-
+   app.post('/models', async (req, res)=>{
+        const foodItem = req.body;
+        console.log(foodItem)
+        // const newItem = foodCollection.insertOne();
+        res.send({
+          success:true,
+        })
+   })
 
 
 

@@ -38,17 +38,15 @@ async function run() {
   })
 
    app.get('/models/:id', async (req, res)=>{
-    const { ObjectId } = require("mongodb");
-    const {id} = req.params.id
+    
+    const {id} = req.params
+    console.log(id);
   
-    console.log("Incoming ID:", id);
-
-
-    const result = await foodCollection.findOne({ _id: id });
-
+    const result = await foodCollection.findOne({ _id: new ObjectId(id) })    
     res.send({
       success:true,
       result
+      
     })
    })
 

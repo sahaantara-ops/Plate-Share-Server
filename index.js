@@ -49,6 +49,27 @@ async function run() {
       
     })
    })
+   
+   app.put('/update-post/:id', async (req, res)=>{
+    const {id} = req.params
+    const data = req.body
+    console.log(id);
+    console.log(data);
+   
+    const result = await foodCollection.updateOne({_id: new ObjectId(id)})
+    res.send({
+      success:true,
+      result
+    })
+    
+   })     
+
+
+
+
+
+
+
 
    app.post('/models', async (req, res)=>{
         const foodItem = req.body;

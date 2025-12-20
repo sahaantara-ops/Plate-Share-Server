@@ -4,6 +4,14 @@ const app = express()
 const port = 3000
 const { MongoClient, ServerApiVersion, ObjectId, } = require('mongodb');
 
+const admin = require("firebase-admin");
+
+const serviceAccount = require("./servicekey.json");
+
+admin.initializeApp({
+  credential: admin.credential.cert(serviceAccount)
+});
+
 app.use(cors())
  
 
@@ -32,7 +40,7 @@ async function run() {
     const db = client.db('Food-models')
     const foodCollection = db.collection('models')
 
-     app.get('/models', async (req, res)=>{
+     app.get('/models', async (req, res)=>{ 
      const result = await foodCollection.find().toArray()
      res.send(result)
   })
@@ -92,6 +100,22 @@ async function run() {
       console.log(result)
       res.send(result)
     })
+    
+
+//    app.get('/availablefoods', async (req, res) => {
+//   try {
+//     const data = foodCollection.findOne({ food_status: Available });
+//     const result = await data.toArray();
+//     res.send({
+//       success: true,
+//       result
+//     });
+//   } catch (err) {
+//     console.error(err);
+//     res.status(500).send({ success: false, message: "Server Error" });
+//   }
+// });
+
 
 
 

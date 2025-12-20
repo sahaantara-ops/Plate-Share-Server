@@ -2,7 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const app = express()
 const port = 3000
-const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId, } = require('mongodb');
 
 app.use(cors())
  
@@ -12,7 +12,7 @@ app.get('/', (req, res) => {
 })
 
 
-
+app.use(express.json());
 
 const uri = "mongodb+srv://Plate-Share-Server:vwrkPxh6SRoD70LN@cluster0.tdrltck.mongodb.net/?appName=Cluster0";
 
@@ -50,20 +50,48 @@ async function run() {
     })
    })
    
-   app.put('/update-post/:id', async (req, res)=>{
-    const {id} = req.params
-    const data = req.body
+   app.put('/models/:id', async (req, res)=>{
+    const {id} = req.params;
+    console.log(req);
+    const data = req.body;
     console.log(id);
     console.log(data);
-   
-    const result = await foodCollection.updateOne({_id: new ObjectId(id)})
+    const objectId = new ObjectId(id);
+    const filter = { _id: objectId };
+    const update = {
+      $set: data
+    }
+    console.log(update);
+    const result = await foodCollection.updateOne(filter, update)
+    console.log(result);
     res.send({
       success:true,
-      result
+    
     })
     
    })     
 
+
+    app.delete('/models/:id', async (req,res) =>{
+      const {id} = req.params
+    //   const objectId = new ObjectId(id);
+    // const filter = { _id: objectId };
+      const result = await foodCollection.deleteOne({ _id: new ObjectId(id) })
+
+      res.send({
+        success:true,
+        result
+      })
+    })
+
+    app.get('/latest-food' , async (req,res) =>{
+      const result = await foodCollection.find()
+      .sort({ ServedBy: -1 }) 
+      .limit(6)
+      .toArray();
+      console.log(result)
+      res.send(result)
+    })
 
 
 
@@ -74,7 +102,7 @@ async function run() {
    app.post('/models', async (req, res)=>{
         const foodItem = req.body;
         console.log(foodItem)
-        const newItem = foodCollection.insertOne();
+        const newItem = foodCollection.insertOne(foodItem);
         res.send({
           success:true,
         })

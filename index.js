@@ -42,13 +42,6 @@ if(!authorization) {
   
 }
 const token = authorization.split(' ')[1]
-
-
-
-
-
-
-
 try{
 await admin.auth().verifyIdToken(token)
 next()
@@ -133,19 +126,17 @@ async function run() {
     })
     
 
-//    app.get('/availablefoods', async (req, res) => {
-//   try {
-//     const data = foodCollection.findOne({ food_status: Available });
-//     const result = await data.toArray();
-//     res.send({
-//       success: true,
-//       result
-//     });
-//   } catch (err) {
-//     console.error(err);
-//     res.status(500).send({ success: false, message: "Server Error" });
-//   }
-// });
+   app.get('/availablefoods', async (req, res) => {
+  try {
+       const foods = await foodCollection
+      .find({ food_status: "available" })
+      .toArray();
+    console.log(foods)
+    res.send(foods);
+  } catch (error) {
+    res.status(500).send({ message: "Failed to fetch foods" });
+  }
+});
 
 
 

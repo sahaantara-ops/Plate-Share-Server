@@ -4,6 +4,7 @@ const app = express()
 const port = 3000
 const { MongoClient, ServerApiVersion, ObjectId, } = require('mongodb');
 const admin = require("firebase-admin");
+require("dotenv").config()
 const serviceAccount = require("./servicekey.json");
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
@@ -18,8 +19,9 @@ app.get('/', (req, res) => {
 
 
 
-
-const uri = "mongodb+srv://Plate-Share-Server:vwrkPxh6SRoD70LN@cluster0.tdrltck.mongodb.net/?appName=Cluster0";
+console.log(process.env.DB_USERNAME)
+console.log(process.env.DB_PASSWORD)
+const uri = `mongodb+srv://${process.env.DB_USERNAME}:${process.env.DB_PASSWORD}@cluster0.tdrltck.mongodb.net/?appName=Cluster0`;
 
 // Create a MongoClient with a MongoClientOptions object to set the Stable API version
 const client = new MongoClient(uri, {
@@ -138,6 +140,11 @@ async function run() {
   }
 });
 
+app.get('/search', async (req,res) => {
+  const search_text = req.query.search
+  const result = await foodCollection.find({title:{$regex: search_text, $options:'i'}}).toArray()
+  res.send(result)
+})
 
 
 

@@ -185,3 +185,5 @@ run().catch(console.dir);
 app.listen(port, () => {
   console.log(`Server in listening on port ${port}`)
 })
+export default app;
+

@@ -3,16 +3,13 @@ const cors = require('cors')
 const app = express()
 const port = 3000
 const { MongoClient, ServerApiVersion, ObjectId, } = require('mongodb');
-
 const admin = require("firebase-admin");
-
 const serviceAccount = require("./servicekey.json");
-
 admin.initializeApp({
   credential: admin.credential.cert(serviceAccount)
 });
-
 app.use(cors())
+app.use(express.json());
  
 
 app.get('/', (req, res) => {
@@ -20,7 +17,7 @@ app.get('/', (req, res) => {
 })
 
 
-app.use(express.json());
+
 
 const uri = "mongodb+srv://Plate-Share-Server:vwrkPxh6SRoD70LN@cluster0.tdrltck.mongodb.net/?appName=Cluster0";
 
@@ -32,6 +29,40 @@ const client = new MongoClient(uri, {
     deprecationErrors: true,
   }
 });
+
+const middleware =async (req,res,next)=>{
+
+const authorization = req.headers.authorization
+
+if(!authorization) {
+  return res.status(401).send({
+     message:"unauthorized access. Token not found!"
+  })
+
+  
+}
+const token = authorization.split(' ')[1]
+
+
+
+
+
+
+
+try{
+await admin.auth().verifyIdToken(token)
+next()
+}catch(error) {
+  res.status(401).send({
+    message:"unauthorized access"
+
+  })
+}
+
+}
+
+
+
 
 async function run() {
   try {
@@ -45,7 +76,7 @@ async function run() {
      res.send(result)
   })
 
-   app.get('/models/:id', async (req, res)=>{
+   app.get('/models/:id',middleware, async (req, res)=>{
     
     const {id} = req.params
     console.log(id);
@@ -58,7 +89,7 @@ async function run() {
     })
    })
    
-   app.put('/models/:id', async (req, res)=>{
+   app.put('/models/:id',  async (req, res)=>{
     const {id} = req.params;
     console.log(req);
     const data = req.body;
